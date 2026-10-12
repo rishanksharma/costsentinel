@@ -1,0 +1,35 @@
+name: CostSentinel CI
+
+on:
+	push:
+		branches:
+			- main
+	pull_request:
+		branches:
+			- main
+
+jobs:
+	validate:
+		runs-on: ubuntu-latest
+		steps:
+			- name: Check out repository
+				uses: actions/checkout@v4
+
+			- name: Set up Python
+				uses: actions/setup-python@v5
+				with:
+					python-version: "3.12"
+
+			- name: Run policy checker
+				run: python policies/policy_checker.py
+
+			- name: Set up Terraform
+				uses: hashicorp/setup-terraform@v3
+				with:
+					terraform_version: "1.16.5"
+
+			- name: Initialize example Terraform configuration
+				run: terraform -chdir=examples init -backend=false -input=false
+
+			- name: Validate example Terraform configuration
+				run: terraform -chdir=examples validate
