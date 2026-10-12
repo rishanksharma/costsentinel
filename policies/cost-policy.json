@@ -1,0 +1,13 @@
+
+{
+  "max_monthly_cost_usd": 50,
+  "max_instance_types": {
+    "dev": "t3.micro",
+    "staging": "t3.small",
+    "prod": "t3.medium"
+  },
+  "require_tags": [
+    "Environment",
+    "ManagedBy"
+  ]
+}
