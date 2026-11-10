@@ -7,6 +7,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 POLICY_FILE = PROJECT_ROOT / "policies" / "cost-policy.json"
 TERRAFORM_FILE = PROJECT_ROOT / "examples" / "ec2-cost-example.tf"
+INFRACOST_REPORT_FILE= PROJECT_ROOT / "infracost-report.json"
 
 
 def load_policy():
@@ -69,10 +70,38 @@ def check_terraform(policy):
 
     return errors, warnings
 
+def check_cost(policy):
+    errors=[]
+    warnings=[]
+
+    try:
+        with INFRACOST_REPORT_FILE.open("r", encoding= "utf-8-sig") as file:
+            report= json.load(file)
+        monthly_cost = float(report["summary"]["total_monthly_cost"])
+        budget= float(policy["max_monthly_cost_usd"])
+    except(OSError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+        errors.append(f"Could not read or validate infracost report/budget : {exc}")
+        return errors, warnings
+
+    print (f"Estimated monthly cost : ${monthly_cost:.2f}")
+    print (f"Monthly budget: ${budget:.2f}")
+
+    if monthly_cost> budget:
+        errors.append(
+            f"Estimated monthly cost ${monthly_cost:.2f} exceeds "
+            f"the budget of ${budget:.2f}."
+        )
+    return errors, warnings
+
 
 def main():
     policy = load_policy()
-    errors, warnings = check_terraform(policy)
+
+    terraform_errors, terraform_warnings = check_terraform(policy)
+    cost_errors, cost_warnings = check_cost(policy)
+
+    errors = terraform_errors + cost_errors
+    warnings = terraform_warnings + cost_warnings
 
     print("CostSentinel Policy Check")
     print("-" * 30)
