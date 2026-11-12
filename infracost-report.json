@@ -1,0 +1,199 @@
+﻿{
+  "currency": "USD",
+  "summary": {
+    "projects": 1,
+    "resources": 1,
+    "costed_resources": 1,
+    "free_resources": 0,
+    "total_monthly_cost": "9.088",
+    "total_potential_yearly_savings": "49.056",
+    "finops_policies": 4,
+    "failing_finops_policies": 2,
+    "distinct_failing_finops_resources": 1,
+    "tagging_policies": 1,
+    "failing_tagging_policies": 1,
+    "distinct_failing_tagging_resources": 2
+  },
+  "projects": [
+    {
+      "project_name": "main",
+      "path": ".",
+      "finops_results": [
+        {
+          "policy_id": "779ddc10-c37e-4bbe-9e50-4c87437d2449",
+          "policy_name": "[EC2.9, EC2.25] Amazon EC2 and launch templates should not associate a public IPv4 address",
+          "policy_slug": "aws-ec2-disable-associate-public-ipv4",
+          "policy_message": "EC2 instances and launch templates should not have a public IPv4 address to reduce attack surface and prevent direct internet exposure. Use NAT gateways for outbound connectivity and AWS Systems Manager Session Manager for secure instance access. Corresponds to AWS Security Hub control EC2.9 and EC2.25.",
+          "failing_resources": [
+            {
+              "name": "aws_instance.app",
+              "issues": [
+                {
+                  "description": "Consider disabling `associate_public_ip_address`. Set it to `false` and use NAT gateways for outbound connectivity.",
+                  "yearly_savings": "0",
+                  "monthly_carbon_savings_grams_co2e": "0",
+                  "monthly_water_savings_liters": "0",
+                  "address": "aws_instance.app",
+                  "attribute": "associate_public_ip_address"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "policy_id": "4e8e7f25-9c89-4845-9002-bad7e0a40f3d",
+          "policy_name": "EBS - consider upgrading gp2 volumes to gp3",
+          "policy_slug": "aws-gp2-to-gp3",
+          "policy_message": "gp3 volumes are the latest generation of general-purpose SSD-based EBS volumes that enable you to provision performance independent of storage capacity, while providing up to **20% lower price per GB** than existing gp2 volumes. With gp3 volumes, you can scale IOPS (input/output operations per second) and throughput without needing to provision additional block storage capacity. This means you only pay for the storage you need.",
+          "failing_resources": []
+        },
+        {
+          "policy_id": "bc3e1b9c-4a61-4a99-ac44-de68d56b3a83",
+          "policy_name": "EC2 - consider using Graviton instances",
+          "policy_slug": "aws-use-graviton-ec2-instance",
+          "policy_message": "Graviton instances are around 20% cheaper than equivalent x86 instances.",
+          "failing_resources": [
+            {
+              "name": "aws_instance.app",
+              "issues": [
+                {
+                  "description": "Switch `instance_type` from `t3.micro` to `t4g.micro`",
+                  "yearly_savings": "49.056",
+                  "monthly_carbon_savings_grams_co2e": "224.46729850000003",
+                  "monthly_water_savings_liters": "1.7769149000000002",
+                  "address": "aws_instance.app",
+                  "attribute": "instance_type"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "policy_id": "751cff81-9e9b-4d50-84da-f1c4f2aaaad2",
+          "policy_name": "EC2 - consider using latest generation instances for t family instances",
+          "policy_slug": "aws-use-latest-generation-t-family-policy",
+          "policy_message": "Upgrade to Amazon EC2 t3 instances for improved Intel Xeon Processors, AWS Nitro System and EBS optimization by default, all at lower price point than previous generations. For example a `t2.medium` instance with 4 GiB of memory and 2 vCPUs (for a 4h 48m burst) has a monthly cost of $33. Whereas a `t3.medium` instance with equivalent machine specs costs just $30. That's a 10% cost saving for a more performant machine.",
+          "failing_resources": []
+        }
+      ],
+      "tagging_results": [
+        {
+          "policy_id": "69a7c055-94b8-4980-9cf5-e56e5ce44372",
+          "policy_name": "FinOps tags",
+          "message": "This example Tagging policy shows how you can enforce required FinOps tag keys/values in pull requests. This example checks for the tags 'Service' (can have any value) and 'Environment' (must be Dev/Stage/Prod) on all taggable resources being changed in the pull request. You can adjust it from https://dashboard.infracost.io \u003e Governance \u003e Tagging policies. You have a 14 day trial of this feature as it's part of Infracost Cloud.",
+          "tag_schema": [
+            {
+              "key": "Environment",
+              "valid_values": [
+                "Dev"
+              ]
+            },
+            {
+              "key": "Service",
+              "mandatory": true
+            }
+          ],
+          "failing_resources": [
+            {
+              "address": "aws_instance.app",
+              "resource_type": "aws_instance",
+              "invalid_tags": [
+                {
+                  "key": "Environment",
+                  "value": "dev",
+                  "suggestion": "Dev"
+                }
+              ],
+              "path": "ec2-cost-example.tf",
+              "line": 22,
+              "missing_mandatory_tags": [
+                "Service"
+              ],
+              "propagation_problems": []
+            },
+            {
+              "address": "aws_instance.app.root_block_device",
+              "resource_type": "aws_instance",
+              "invalid_tags": [
+                {
+                  "key": "Environment",
+                  "value": "dev",
+                  "suggestion": "Dev"
+                }
+              ],
+              "path": "ec2-cost-example.tf",
+              "line": 22,
+              "missing_mandatory_tags": [
+                "Service"
+              ],
+              "propagation_problems": []
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "name": "aws_instance.app",
+          "type": "aws_instance",
+          "is_supported": true,
+          "is_free": false,
+          "cost_components": [
+            {
+              "name": "Instance usage (Linux/UNIX, on-demand, t3.micro)",
+              "unit": "hours",
+              "price": "0.0112",
+              "quantity": "730",
+              "base_monthly_cost": "8.176",
+              "usage_monthly_cost": "0",
+              "total_monthly_cost": "8.176",
+              "monthly_carbon_savings_grams_co2e": "1170.6176121",
+              "monthly_water_savings_liters": "2.5456049000000003"
+            }
+          ],
+          "subresources": [
+            {
+              "name": "root_block_device",
+              "type": "",
+              "is_supported": false,
+              "is_free": false,
+              "cost_components": [
+                {
+                  "name": "Storage (general purpose SSD, gp2)",
+                  "unit": "GB",
+                  "price": "0.114",
+                  "quantity": "8",
+                  "base_monthly_cost": "0.912",
+                  "usage_monthly_cost": "0",
+                  "total_monthly_cost": "0.912",
+                  "monthly_carbon_savings_grams_co2e": "27.02239848",
+                  "monthly_water_savings_liters": "0.06341008"
+                }
+              ],
+              "tags": {
+                "Environment": "dev",
+                "ManagedBy": "terraform",
+                "Name": "costsentinel-app"
+              },
+              "supports_tags": true,
+              "supports_default_tags": true,
+              "metadata": {}
+            }
+          ],
+          "tags": {
+            "Environment": "dev",
+            "ManagedBy": "terraform",
+            "Name": "costsentinel-app"
+          },
+          "supports_tags": true,
+          "supports_default_tags": true,
+          "metadata": {
+            "filename": "ec2-cost-example.tf",
+            "start_line": 22,
+            "end_line": 31,
+            "deep_checksum": "7c5cbff6c9375c8d"
+          }
+        }
+      ]
+    }
+  ]
+}
