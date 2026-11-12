@@ -1,6 +1,10 @@
 
 {
-  "max_monthly_cost_usd": 50,
+  "environment_budgets": {
+    "dev": 15,
+    "staging": 30,
+    "prod": 100
+  },
   "max_instance_types": {
     "dev": "t3.micro",
     "staging": "t3.small",
